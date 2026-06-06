@@ -1,0 +1,690 @@
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE STC32G_PWM
+OBJECT MODULE PLACED IN .\list\STC32G_PWM.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE STC32G_PWM.c XSMALL INTR2 BROWSE DEBUG PRINT(.\list\STC32G_PWM.lst) OBJE
+                    -CT(.\list\STC32G_PWM.obj) 
+
+stmt  level    source
+
+    1          /*---------------------------------------------------------------------*/
+    2          /* --- STC MCU Limited ------------------------------------------------*/
+    3          /* --- STC 1T Series MCU Demo Programme -------------------------------*/
+    4          /* --- Mobile: (86)13922805190 ----------------------------------------*/
+    5          /* --- Fax: 86-0513-55012956,55012947,55012969 ------------------------*/
+    6          /* --- Tel: 86-0513-55012928,55012929,55012966 ------------------------*/
+    7          /* --- Web: www.STCAI.com ---------------------------------------------*/
+    8          /* --- Web: www.STCMCUDATA.com  ---------------------------------------*/
+    9          /* --- BBS: www.STCAIMCU.com  -----------------------------------------*/
+   10          /* --- QQ:  800003751 -------------------------------------------------*/
+   11          /* ���Ҫ�ڳ�����ʹ�ô˴���,���ڳ�����ע��ʹ����STC�
+             -������ϼ�����            */
+   12          /*---------------------------------------------------------------------*/
+   13          
+   14          #include "STC32G_PWM.h"
+   15          
+   16          //========================================================================
+   17          // ����: PWM_Configuration
+   18          // ����: PWM��ʼ������.
+   19          // ����: PWMx: �ṹ����,��ο�PWM.h��Ķ���.
+   20          // ����: �ɹ����� SUCCESS, ���󷵻� FAIL.
+   21          // �汾: V1.0, 2012-10-22
+   22          //========================================================================
+   23          u8 PWM_Configuration(u8 PWM, PWMx_InitDefine *PWMx)
+   24          {
+   25   1              #if 0
+                       if(PWM == PWM1)
+                       {
+                               PWMA_CC1E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMA_CC1NE_Disable();           //�رձȽ����
+                               PWMA_CC1S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMA_OC1ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO1P)
+                               {
+                                       PWMA_CC1E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO1P;
+                               }
+                               else
+                               {
+                                       PWMA_CC1E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO1P;
+                               }
+                               if(PWMx->PWM_EnoSelect & ENO1N)
+                               {
+                                       PWMA_CC1NE_Enable();            //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO1N;
+                               }
+                               else
+                               {
+                                       PWMA_CC1NE_Disable();           //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO1N;
+                               }
+                               
+                               PWMA_Duty1(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 2   
+
+                       if(PWM == PWM2)
+                       {
+                               PWMA_CC2E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMA_CC2NE_Disable();           //�رձȽ����
+                               PWMA_CC2S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMA_OC2ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO2P)
+                               {
+                                       PWMA_CC2E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO2P;
+                               }
+                               else
+                               {
+                                       PWMA_CC2E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO2P;
+                               }
+                               if(PWMx->PWM_EnoSelect & ENO2N)
+                               {
+                                       PWMA_CC2NE_Enable();            //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO2N;
+                               }
+                               else
+                               {
+                                       PWMA_CC2NE_Disable();           //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO2N;
+                               }
+                               
+                               PWMA_Duty2(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       
+                       if(PWM == PWM3)
+                       {
+                               PWMA_CC3E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMA_CC3NE_Disable();           //�رձȽ����
+                               PWMA_CC3S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMA_OC3ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO3P)
+                               {
+                                       PWMA_CC3E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO3P;
+                               }
+                               else
+                               {
+                                       PWMA_CC3E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO3P;
+                               }
+                               if(PWMx->PWM_EnoSelect & ENO3N)
+                               {
+                                       PWMA_CC3NE_Enable();            //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO3N;
+                               }
+                               else
+                               {
+                                       PWMA_CC3NE_Disable();           //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO3N;
+                               }
+                               
+                               PWMA_Duty3(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       
+                       if(PWM == PWM4)
+                       {
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 3   
+
+                               PWMA_CC4E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMA_CC4NE_Disable();           //�رձȽ����
+                               PWMA_CC4S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMA_OC4ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO4P)
+                               {
+                                       PWMA_CC4E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO4P;
+                               }
+                               else
+                               {
+                                       PWMA_CC4E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO4P;
+                               }
+                               if(PWMx->PWM_EnoSelect & ENO4N)
+                               {
+                                       PWMA_CC4NE_Enable();            //�������벶��/�Ƚ����
+                                       PWMA_ENO |= ENO4N;
+                               }
+                               else
+                               {
+                                       PWMA_CC4NE_Disable();           //�ر����벶��/�Ƚ����
+                                       PWMA_ENO &= ~ENO4N;
+                               }
+                               
+                               PWMA_Duty4(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       
+                       if(PWM == PWMA)
+                       {
+               //              PWMA_OC1_ReloadEnable(PWMx->PWM_Reload);        //����Ƚϵ�Ԥװ��ʹ��
+               //              PWMA_OC1_FastEnable(PWMx->PWM_Fast);            //����ȽϿ��ٹ���ʹ��
+               //              PWMA_CCPCAPreloaded(PWMx->PWM_PreLoad); //����/�Ƚ�Ԥװ�ؿ���λ(��λֻ�Ծ�
+             -��л��������ͨ��������)
+               //              PWMA_BrakeEnable(PWMx->PWM_BrakeEnable);        //����/��ֹɲ������
+               
+                               PWMA_DeadTime(PWMx->PWM_DeadTime);      //��������������
+                               PWMA_AutoReload(PWMx->PWM_Period);      //��������
+                               PWMA_BrakeOutputEnable(PWMx->PWM_MainOutEnable);        //�����ʹ��
+                               PWMA_CEN_Enable(PWMx->PWM_CEN_Enable);  //ʹ�ܼ�����
+                               return  SUCCESS;
+                       }
+               
+                       #endif
+  169   1      
+  170   1              if(PWM == PWM5)
+  171   1              {
+  172   2                      PWMB_CC5E_Disable();            //�ر����벶��/�Ƚ����
+  173   2                      PWMB_CC5S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+  174   2                      PWMB_OC5ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+  175   2      
+  176   2                      if(PWMx->PWM_EnoSelect & ENO5P)
+  177   2                      {
+  178   3                              PWMB_CC5E_Enable();                     //�������벶��/�Ƚ����
+  179   3                              PWMB_ENO |= ENO5P;
+  180   3                      }
+  181   2                      else
+  182   2                      {
+  183   3                              PWMB_CC5E_Disable();            //�ر����벶��/�Ƚ����
+  184   3                              PWMB_ENO &= ~ENO5P;
+  185   3                      }
+  186   2                      
+  187   2                      PWMB_Duty5(PWMx->PWM_Duty);
+  188   2                      return  SUCCESS;
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 4   
+
+  189   2              }
+  190   1              
+  191   1              if(PWM == PWM6)
+  192   1              {
+  193   2                      PWMB_CC6E_Disable();            //�ر����벶��/�Ƚ����
+  194   2                      PWMB_CC6S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+  195   2                      PWMB_OC6ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+  196   2      
+  197   2                      if(PWMx->PWM_EnoSelect & ENO6P)
+  198   2                      {
+  199   3                              PWMB_CC6E_Enable();                     //�������벶��/�Ƚ����
+  200   3                              PWMB_ENO |= ENO6P;
+  201   3                      }
+  202   2                      else
+  203   2                      {
+  204   3                              PWMB_CC6E_Disable();            //�ر����벶��/�Ƚ����
+  205   3                              PWMB_ENO &= ~ENO6P;
+  206   3                      }
+  207   2                      
+  208   2                      PWMB_Duty6(PWMx->PWM_Duty);
+  209   2                      return  SUCCESS;
+  210   2              }
+  211   1              
+  212   1              #if 0
+                       if(PWM == PWM7)
+                       {
+                               PWMB_CC7E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMB_CC7S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMB_OC7ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO7P)
+                               {
+                                       PWMB_CC7E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMB_ENO |= ENO7P;
+                               }
+                               else
+                               {
+                                       PWMB_CC7E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMB_ENO &= ~ENO7P;
+                               }
+                               
+                               PWMB_Duty7(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       
+                       if(PWM == PWM8)
+                       {
+                               PWMB_CC8E_Disable();            //�ر����벶��/�Ƚ����
+                               PWMB_CC8S_Direction(CCAS_OUTPUT);               //CCnS����ͨ���ر�ʱ���ǿ�д��
+                               PWMB_OC8ModeSet(PWMx->PWM_Mode);                //��������Ƚ�ģʽ
+               
+                               if(PWMx->PWM_EnoSelect & ENO8P)
+                               {
+                                       PWMB_CC8E_Enable();                     //�������벶��/�Ƚ����
+                                       PWMB_ENO |= ENO8P;
+                               }
+                               else
+                               {
+                                       PWMB_CC8E_Disable();            //�ر����벶��/�Ƚ����
+                                       PWMB_ENO &= ~ENO8P;
+                               }
+                               
+                               PWMB_Duty8(PWMx->PWM_Duty);
+                               return  SUCCESS;
+                       }
+                       #endif
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 5   
+
+  255   1      
+  256   1              if(PWM == PWMB)
+  257   1              {
+  258   2      //              PWMB_OC5_ReloadEnable(PWMx->PWM_Reload);        //����Ƚϵ�Ԥװ��ʹ��
+  259   2      //              PWMB_OC5_FastEnable(PWMx->PWM_Fast);            //����ȽϿ��ٹ���ʹ��
+  260   2      //              PWMB_CCPCBPreloaded(PWMx->PWM_PreLoad); //����/�Ƚ�Ԥװ�ؿ���λ(��λֻ�Ծ�
+             -��л��������ͨ��������)
+  261   2      //              PWMB_BrakeEnable(PWMx->PWM_BrakeEnable);        //����/��ֹɲ������
+  262   2      
+  263   2                      PWMB_DeadTime(PWMx->PWM_DeadTime);      //��������������
+  264   2                      PWMB_AutoReload(PWMx->PWM_Period);      //��������
+  265   2                      PWMB_BrakeOutputEnable(PWMx->PWM_MainOutEnable);        //�����ʹ��
+  266   2                      PWMB_CEN_Enable(PWMx->PWM_CEN_Enable);  //ʹ�ܼ�����
+  267   2                      return  SUCCESS;
+  268   2              }
+  269   1      
+  270   1              return  FAIL;   //����
+  271   1      }
+  272          
+  273          //========================================================================
+  274          // ����: UpdatePwm
+  275          // ����: PWMռ�ձȸ��³���.
+  276          // ����: PWM: PWMͨ��/���, PWMx�ṹ����,��ο�PWM.h��Ķ���.
+  277          // ����: none.
+  278          // �汾: V1.0, 2012-10-22
+  279          //========================================================================
+  280          void UpdatePwm(u8 PWM, PWMx_Duty *PWMx)
+  281          {
+  282   1              if (PWM == PWMB)
+  283   1              {
+  284   2                      PWMB_Duty5(PWMx->PWM5_Duty);
+  285   2                      PWMB_Duty6(PWMx->PWM6_Duty);
+  286   2              }
+  287   1      }
+  288          
+  289          //========================================================================
+  290          // ����: ReadPWMA(void)
+  291          // ����: �첽��ȡPWMA���⹦�ܼĴ�������. 
+  292          // ����: addr: ��ȡ���⹦�ܼĴ�����ַ.
+  293          // ����: dat:  ��ȡ���⹦�ܼĴ�������.
+  294          // �汾: V1.0, 2022-03-16
+  295          //========================================================================
+  296          u8 ReadPWMA(u8 addr)
+  297          {
+  298   1              u8 dat;
+  299   1              
+  300   1              while (HSPWMA_ADR &     0x80); //�ȴ�ǰһ���첽��д���
+  301   1              HSPWMA_ADR = addr |     0x80;  //���ü�ӷ��ʵ�ַ,ֻ��Ҫ����ԭXFR��ַ�ĵ�7�
+             -�
+  302   1                                                                      //HSPWMA_ADDR�Ĵ��������λд1,��ʾ������
+  303   1              while (HSPWMA_ADR &     0x80); //�ȴ���ǰ�첽��ȡ���
+  304   1              dat     = HSPWMA_DAT;              //��ȡ�첽����
+  305   1              
+  306   1              return dat;
+  307   1      }
+  308          
+  309          //========================================================================
+  310          // ����: ReadPWMB(void)
+  311          // ����: �첽��ȡPWMB���⹦�ܼĴ�������. 
+  312          // ����: addr: ��ȡ���⹦�ܼĴ�����ַ.
+  313          // ����: dat:  ��ȡ���⹦�ܼĴ�������.
+  314          // �汾: V1.0, 2022-03-16
+  315          //========================================================================
+  316          u8 ReadPWMB(u8 addr)
+  317          {
+  318   1              u8 dat;
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 6   
+
+  319   1              
+  320   1              while (HSPWMB_ADR &     0x80); //�ȴ�ǰһ���첽��д���
+  321   1              HSPWMB_ADR = addr |     0x80;  //���ü�ӷ��ʵ�ַ,ֻ��Ҫ����ԭXFR��ַ�ĵ�7�
+             -�
+  322   1                                                                      //HSPWMB_ADDR�Ĵ��������λд1,��ʾ������
+  323   1              while (HSPWMB_ADR &     0x80); //�ȴ���ǰ�첽��ȡ���
+  324   1              dat     = HSPWMB_DAT;              //��ȡ�첽����
+  325   1              
+  326   1              return dat;
+  327   1      }
+  328          
+  329          //========================================================================
+  330          // ����: WritePWMA(void)
+  331          // ����: �첽��ȡPWMA���⹦�ܼĴ�������. 
+  332          // ����: addr: д�����⹦�ܼĴ�����ַ.
+  333          // ����: dat:  д�����⹦�ܼĴ�������.
+  334          // ����: none.
+  335          // �汾: V1.0, 2022-03-16
+  336          //========================================================================
+  337          void WritePWMA(u8       addr, u8 dat)
+  338          {
+  339   1              while (HSPWMA_ADR &     0x80); //�ȴ�ǰһ���첽��д���
+  340   1              HSPWMA_DAT = dat;                  //׼����Ҫд�������
+  341   1              HSPWMA_ADR = addr &     0x7f;  //���ü�ӷ��ʵ�ַ,ֻ��Ҫ����ԭXFR��ַ�ĵ�7�
+             -�
+  342   1                                                                      //HSPWMA_ADDR�Ĵ��������λд0,��ʾд����
+  343   1      }
+  344          
+  345          //========================================================================
+  346          // ����: WritePWMB(void)
+  347          // ����: �첽��ȡPWMB���⹦�ܼĴ�������. 
+  348          // ����: addr: д�����⹦�ܼĴ�����ַ.
+  349          // ����: dat:  д�����⹦�ܼĴ�������.
+  350          // ����: none.
+  351          // �汾: V1.0, 2022-03-16
+  352          //========================================================================
+  353          void WritePWMB(u8       addr, u8 dat)
+  354          {
+  355   1              while (HSPWMB_ADR &     0x80); //�ȴ�ǰһ���첽��д���
+  356   1              HSPWMB_DAT = dat;                  //׼����Ҫд�������
+  357   1              HSPWMB_ADR = addr &     0x7f;  //���ü�ӷ��ʵ�ַ,ֻ��Ҫ����ԭXFR��ַ�ĵ�7�
+             -�
+  358   1                                                                      //HSPWMB_ADDR�Ĵ��������λд0,��ʾд����
+  359   1      }
+  360          
+  361          //========================================================================
+  362          // ����: HSPWM_Configuration
+  363          // ����: HSPWM��ʼ������.
+  364          // ����: PWMx: �ṹ����,��ο�PWM.h��Ķ���.
+  365          // ����: �ɹ����� SUCCESS, ���󷵻� FAIL.
+  366          // �汾: V1.0, 2022-04-05
+  367          //========================================================================
+  368          void HSPWM_Configuration(u8 PWM, HSPWMx_InitDefine *PWMx, PWMx_Duty *DUTYx)
+  369          {
+  370   1              u8 tmpENO,tmpCCER1,tmpCCER2;
+  371   1              
+  372   1              if(PWM == PWMA)
+  373   1              {
+  374   2                      HSPWMA_CFG = 0x03;                      //ʹ��PWMA��ؼĴ����첽���ʹ���
+  375   2      
+  376   2                      if(PWMx->PWM_EnoSelect & ENO1P)
+  377   2                      {
+  378   3                              tmpENO |= ENO1P;
+  379   3                              tmpCCER1 |= 0x01;
+  380   3                      }
+  381   2                      else
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 7   
+
+  382   2                      {
+  383   3                              tmpENO &= ~ENO1P;
+  384   3                              tmpCCER1 &= ~0x01;
+  385   3                      }
+  386   2                      if(PWMx->PWM_EnoSelect & ENO1N)
+  387   2                      {
+  388   3                              tmpENO |= ENO1N;
+  389   3                              tmpCCER1 |= 0x04;
+  390   3                      }
+  391   2                      else
+  392   2                      {
+  393   3                              tmpENO &= ~ENO1N;
+  394   3                              tmpCCER1 &= ~0x04;
+  395   3                      }
+  396   2                      if(PWMx->PWM_EnoSelect & ENO2P)
+  397   2                      {
+  398   3                              tmpENO |= ENO2P;
+  399   3                              tmpCCER1 |= 0x10;
+  400   3                      }
+  401   2                      else
+  402   2                      {
+  403   3                              tmpENO &= ~ENO2P;
+  404   3                              tmpCCER1 &= ~0x10;
+  405   3                      }
+  406   2                      if(PWMx->PWM_EnoSelect & ENO2N)
+  407   2                      {
+  408   3                              tmpENO |= ENO2N;
+  409   3                              tmpCCER1 |= 0x40;
+  410   3                      }
+  411   2                      else
+  412   2                      {
+  413   3                              tmpENO &= ~ENO2N;
+  414   3                              tmpCCER1 &= ~0x40;
+  415   3                      }
+  416   2                      if(PWMx->PWM_EnoSelect & ENO3P)
+  417   2                      {
+  418   3                              tmpENO |= ENO3P;
+  419   3                              tmpCCER2 |= 0x01;
+  420   3                      }
+  421   2                      else
+  422   2                      {
+  423   3                              tmpENO &= ~ENO3P;
+  424   3                              tmpCCER2 &= ~0x01;
+  425   3                      }
+  426   2                      if(PWMx->PWM_EnoSelect & ENO3N)
+  427   2                      {
+  428   3                              tmpENO |= ENO3N;
+  429   3                              tmpCCER2 |= 0x04;
+  430   3                      }
+  431   2                      else
+  432   2                      {
+  433   3                              tmpENO &= ~ENO3N;
+  434   3                              tmpCCER2 &= ~0x04;
+  435   3                      }
+  436   2                      if(PWMx->PWM_EnoSelect & ENO4P)
+  437   2                      {
+  438   3                              tmpENO |= ENO4P;
+  439   3                              tmpCCER2 |= 0x10;
+  440   3                      }
+  441   2                      else
+  442   2                      {
+  443   3                              tmpENO &= ~ENO4P;
+  444   3                              tmpCCER2 &= ~0x10;
+  445   3                      }
+  446   2                      if(PWMx->PWM_EnoSelect & ENO4N)
+  447   2                      {
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 8   
+
+  448   3                              tmpENO |= ENO4N;
+  449   3                              tmpCCER2 |= 0x40;
+  450   3                      }
+  451   2                      else
+  452   2                      {
+  453   3                              tmpENO &= ~ENO4N;
+  454   3                              tmpCCER2 &= ~0x40;
+  455   3                      }
+  456   2                      
+  457   2                      //ͨ���첽��ʽ����PWMA����ؼĴ���
+  458   2                      WritePWMA((u8)&PWMA_CCER1, 0x00);
+  459   2                      WritePWMA((u8)&PWMA_CCER2, 0x00);
+  460   2                      WritePWMA((u8)&PWMA_CCMR1, CCMRn_PWM_MODE1);                    //ͨ��ģʽ����
+  461   2                      WritePWMA((u8)&PWMA_CCMR2, CCMRn_PWM_MODE1);
+  462   2                      WritePWMA((u8)&PWMA_CCMR3, CCMRn_PWM_MODE1);
+  463   2                      WritePWMA((u8)&PWMA_CCMR4, CCMRn_PWM_MODE1);
+  464   2                      WritePWMA((u8)&PWMA_CCER1, tmpCCER1);                   //����ͨ�����ʹ�ܺͼ���
+  465   2                      WritePWMA((u8)&PWMA_CCER2, tmpCCER2);
+  466   2                      WritePWMA((u8)&PWMA_ENO, tmpENO);       //ʹ��PWM�ź�����˿�
+  467   2                      WritePWMA((u8)&PWMA_CCR1H, (u8)(DUTYx->PWM1_Duty >> 8));        //�������PWM��ռ�ձ�
+  468   2                      WritePWMA((u8)&PWMA_CCR1L, (u8)DUTYx->PWM1_Duty);
+  469   2                      WritePWMA((u8)&PWMA_CCR2H, (u8)(DUTYx->PWM2_Duty >> 8));        //�������PWM��ռ�ձ�
+  470   2                      WritePWMA((u8)&PWMA_CCR2L, (u8)DUTYx->PWM2_Duty);
+  471   2                      WritePWMA((u8)&PWMA_CCR3H, (u8)(DUTYx->PWM3_Duty >> 8));        //�������PWM��ռ�ձ�
+  472   2                      WritePWMA((u8)&PWMA_CCR3L, (u8)DUTYx->PWM3_Duty);
+  473   2                      WritePWMA((u8)&PWMA_CCR4H, (u8)(DUTYx->PWM4_Duty >> 8));        //�������PWM��ռ�ձ�
+  474   2                      WritePWMA((u8)&PWMA_CCR4L, (u8)DUTYx->PWM4_Duty);
+  475   2                      WritePWMA((u8)&PWMA_ARRH,       (u8)(PWMx->PWM_Period >> 8));   //�������PWM������
+  476   2                      WritePWMA((u8)&PWMA_ARRL,       (u8)(PWMx->PWM_Period));
+  477   2                      WritePWMA((u8)&PWMA_DTR, PWMx->PWM_DeadTime);                                   //���û����Գ����PWM����
+             -���
+  478   2                      WritePWMA((u8)&PWMA_BKR, PWMx->PWM_MainOutEnable<<7);   //ʹ�������
+  479   2                      WritePWMA((u8)&PWMA_CR1, PWMx->PWM_CEN_Enable);                         //��ʼPWM����
+  480   2              }
+  481   1              else if(PWM == PWMB)
+  482   1              {
+  483   2                      HSPWMB_CFG = 0x03;                      //ʹ��PWMB��ؼĴ����첽���ʹ���
+  484   2      
+  485   2                      if(PWMx->PWM_EnoSelect & ENO5P)
+  486   2                      {
+  487   3                              tmpENO |= ENO5P;
+  488   3                              tmpCCER1 |= 0x01;
+  489   3                      }
+  490   2                      else
+  491   2                      {
+  492   3                              tmpENO &= ~ENO5P;
+  493   3                              tmpCCER1 &= ~0x01;
+  494   3                      }
+  495   2                      if(PWMx->PWM_EnoSelect & ENO6P)
+  496   2                      {
+  497   3                              tmpENO |= ENO6P;
+  498   3                              tmpCCER1 |= 0x10;
+  499   3                      }
+  500   2                      else
+  501   2                      {
+  502   3                              tmpENO &= ~ENO6P;
+  503   3                              tmpCCER1 &= ~0x10;
+  504   3                      }
+  505   2                      if(PWMx->PWM_EnoSelect & ENO7P)
+  506   2                      {
+  507   3                              tmpENO |= ENO7P;
+  508   3                              tmpCCER2 |= 0x01;
+  509   3                      }
+  510   2                      else
+  511   2                      {
+  512   3                              tmpENO &= ~ENO7P;
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 9   
+
+  513   3                              tmpCCER2 &= ~0x01;
+  514   3                      }
+  515   2                      if(PWMx->PWM_EnoSelect & ENO8P)
+  516   2                      {
+  517   3                              tmpENO |= ENO8P;
+  518   3                              tmpCCER2 |= 0x10;
+  519   3                      }
+  520   2                      else
+  521   2                      {
+  522   3                              tmpENO &= ~ENO8P;
+  523   3                              tmpCCER2 &= ~0x10;
+  524   3                      }
+  525   2                      
+  526   2                      //ͨ���첽��ʽ����PWMA����ؼĴ���
+  527   2                      WritePWMB((u8)&PWMB_CCER1, 0x00);
+  528   2                      WritePWMB((u8)&PWMB_CCER2, 0x00);
+  529   2                      WritePWMB((u8)&PWMB_CCMR1, CCMRn_PWM_MODE1);                    //ͨ��ģʽ����
+  530   2                      WritePWMB((u8)&PWMB_CCMR2, CCMRn_PWM_MODE1);
+  531   2                      WritePWMB((u8)&PWMB_CCMR3, CCMRn_PWM_MODE1);
+  532   2                      WritePWMB((u8)&PWMB_CCMR4, CCMRn_PWM_MODE1);
+  533   2                      WritePWMB((u8)&PWMB_CCER1, tmpCCER1);                   //����ͨ�����ʹ�ܺͼ���
+  534   2                      WritePWMB((u8)&PWMB_CCER2, tmpCCER2);
+  535   2                      WritePWMB((u8)&PWMB_ENO, tmpENO);       //ʹ��PWM�ź�����˿�
+  536   2                      WritePWMB((u8)&PWMB_CCR5H, (u8)(DUTYx->PWM5_Duty >> 8));        //�������PWM��ռ�ձ�
+  537   2                      WritePWMB((u8)&PWMB_CCR5L, (u8)DUTYx->PWM5_Duty);
+  538   2                      WritePWMB((u8)&PWMB_CCR6H, (u8)(DUTYx->PWM6_Duty >> 8));        //�������PWM��ռ�ձ�
+  539   2                      WritePWMB((u8)&PWMB_CCR6L, (u8)DUTYx->PWM6_Duty);
+  540   2                      WritePWMB((u8)&PWMB_CCR7H, (u8)(DUTYx->PWM7_Duty >> 8));        //�������PWM��ռ�ձ�
+  541   2                      WritePWMB((u8)&PWMB_CCR7L, (u8)DUTYx->PWM7_Duty);
+  542   2                      WritePWMB((u8)&PWMB_CCR8H, (u8)(DUTYx->PWM8_Duty >> 8));        //�������PWM��ռ�ձ�
+  543   2                      WritePWMB((u8)&PWMB_CCR8L, (u8)DUTYx->PWM8_Duty);
+  544   2                      WritePWMB((u8)&PWMB_ARRH,       (u8)(PWMx->PWM_Period >> 8));   //�������PWM������
+  545   2                      WritePWMB((u8)&PWMB_ARRL,       (u8)(PWMx->PWM_Period));
+  546   2                      WritePWMB((u8)&PWMB_DTR, PWMx->PWM_DeadTime);                                   //���û����Գ����PWM����
+             -���
+  547   2                      WritePWMB((u8)&PWMB_BKR, PWMx->PWM_MainOutEnable<<7);   //ʹ�������
+  548   2                      WritePWMB((u8)&PWMB_CR1, PWMx->PWM_CEN_Enable);                         //��ʼPWM����
+  549   2              }
+  550   1      }
+  551          
+  552          //========================================================================
+  553          // ����: UpdateHSPwm
+  554          // ����: HSPWMռ�ձȸ��³���.
+  555          // ����: PWM: PWMͨ��/���, PWMx�ṹ����,��ο�PWM.h��Ķ���.
+  556          // ����: none.
+  557          // �汾: V1.0, 2022-04-05
+  558          //========================================================================
+  559          void UpdateHSPwm(u8 PWM, PWMx_Duty *PWMx)
+  560          {
+  561   1              switch(PWM)
+  562   1              {
+  563   2                      case PWM1:
+  564   2                              WritePWMA((u8)&PWMA_CCR1H, (u8)(PWMx->PWM1_Duty >> 8)); //�������PWM��ռ�ձ�
+  565   2                              WritePWMA((u8)&PWMA_CCR1L, (u8)PWMx->PWM1_Duty);
+  566   2                      break;
+  567   2      
+  568   2                      case PWM2:
+  569   2                              WritePWMA((u8)&PWMA_CCR2H, (u8)(PWMx->PWM2_Duty >> 8)); //�������PWM��ռ�ձ�
+  570   2                              WritePWMA((u8)&PWMA_CCR2L, (u8)PWMx->PWM2_Duty);
+  571   2                      break;
+  572   2      
+  573   2                      case PWM3:
+  574   2                              WritePWMA((u8)&PWMA_CCR3H, (u8)(PWMx->PWM3_Duty >> 8)); //�������PWM��ռ�ձ�
+  575   2                              WritePWMA((u8)&PWMA_CCR3L, (u8)PWMx->PWM3_Duty);
+  576   2                      break;
+  577   2      
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 10  
+
+  578   2                      case PWM4:
+  579   2                              WritePWMA((u8)&PWMA_CCR4H, (u8)(PWMx->PWM4_Duty >> 8)); //�������PWM��ռ�ձ�
+  580   2                              WritePWMA((u8)&PWMA_CCR4L, (u8)PWMx->PWM4_Duty);
+  581   2                      break;
+  582   2      
+  583   2                      case PWM5:
+  584   2                              WritePWMB((u8)&PWMB_CCR5H, (u8)(PWMx->PWM5_Duty >> 8)); //�������PWM��ռ�ձ�
+  585   2                              WritePWMB((u8)&PWMB_CCR5L, (u8)PWMx->PWM5_Duty);
+  586   2                      break;
+  587   2      
+  588   2                      case PWM6:
+  589   2                              WritePWMB((u8)&PWMB_CCR6H, (u8)(PWMx->PWM6_Duty >> 8)); //�������PWM��ռ�ձ�
+  590   2                              WritePWMB((u8)&PWMB_CCR6L, (u8)PWMx->PWM6_Duty);
+  591   2                      break;
+  592   2      
+  593   2                      case PWM7:
+  594   2                              WritePWMB((u8)&PWMB_CCR7H, (u8)(PWMx->PWM7_Duty >> 8)); //�������PWM��ռ�ձ�
+  595   2                              WritePWMB((u8)&PWMB_CCR7L, (u8)PWMx->PWM7_Duty);
+  596   2                      break;
+  597   2      
+  598   2                      case PWM8:
+  599   2                              WritePWMB((u8)&PWMB_CCR8H, (u8)(PWMx->PWM8_Duty >> 8)); //�������PWM��ռ�ձ�
+  600   2                              WritePWMB((u8)&PWMB_CCR8L, (u8)PWMx->PWM8_Duty);
+  601   2                      break;
+  602   2      
+  603   2                      case PWMA:
+  604   2                              WritePWMA((u8)&PWMA_CCR1H, (u8)(PWMx->PWM1_Duty >> 8)); //�������PWM��ռ�ձ�
+  605   2                              WritePWMA((u8)&PWMA_CCR1L, (u8)PWMx->PWM1_Duty);
+  606   2                              WritePWMA((u8)&PWMA_CCR2H, (u8)(PWMx->PWM2_Duty >> 8)); //�������PWM��ռ�ձ�
+  607   2                              WritePWMA((u8)&PWMA_CCR2L, (u8)PWMx->PWM2_Duty);
+  608   2                              WritePWMA((u8)&PWMA_CCR3H, (u8)(PWMx->PWM3_Duty >> 8)); //�������PWM��ռ�ձ�
+  609   2                              WritePWMA((u8)&PWMA_CCR3L, (u8)PWMx->PWM3_Duty);
+  610   2                              WritePWMA((u8)&PWMA_CCR4H, (u8)(PWMx->PWM4_Duty >> 8)); //�������PWM��ռ�ձ�
+  611   2                              WritePWMA((u8)&PWMA_CCR4L, (u8)PWMx->PWM4_Duty);
+  612   2                      break;
+  613   2      
+  614   2                      case PWMB:
+  615   2                              WritePWMB((u8)&PWMB_CCR5H, (u8)(PWMx->PWM5_Duty >> 8)); //�������PWM��ռ�ձ�
+  616   2                              WritePWMB((u8)&PWMB_CCR5L, (u8)PWMx->PWM5_Duty);
+  617   2                              WritePWMB((u8)&PWMB_CCR6H, (u8)(PWMx->PWM6_Duty >> 8)); //�������PWM��ռ�ձ�
+  618   2                              WritePWMB((u8)&PWMB_CCR6L, (u8)PWMx->PWM6_Duty);
+  619   2                              WritePWMB((u8)&PWMB_CCR7H, (u8)(PWMx->PWM7_Duty >> 8)); //�������PWM��ռ�ձ�
+  620   2                              WritePWMB((u8)&PWMB_CCR7L, (u8)PWMx->PWM7_Duty);
+  621   2                              WritePWMB((u8)&PWMB_CCR8H, (u8)(PWMx->PWM8_Duty >> 8)); //�������PWM��ռ�ձ�
+  622   2                              WritePWMB((u8)&PWMB_CCR8L, (u8)PWMx->PWM8_Duty);
+  623   2                      break;
+  624   2              }
+  625   1      }
+  626          
+  627          /*********************************************************/
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2049     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------          7
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+C251 COMPILER V5.60.0,  STC32G_PWM                                                         06/06/26  11:53:44  PAGE 11  
+
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

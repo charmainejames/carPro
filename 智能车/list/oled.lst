@@ -1,0 +1,294 @@
+C251 COMPILER V5.60.0,  oled                                                               06/06/26  20:17:07  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE oled
+OBJECT MODULE PLACED IN .\list\oled.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE oled.c XSMALL INTR2 BROWSE DEBUG PRINT(.\list\oled.lst) OBJECT(.\list\ol
+                    -ed.obj) 
+
+stmt  level    source
+
+    1          #include "oled.h"
+    2          
+    3          /*Õâ¸öÊÇoled·¢ËÍÖ¸ÁîµÄº¯Êı*/
+    4          void oled_IIC_SendCommand(unsigned char IIC_Command)
+    5          {
+    6   1              iic_Start();//IICĞ­Òé¿ªÊ¼ĞÅºÅ
+    7   1              iic_SendData(0x78);//·¢ËÍÉè±¸µØÖ·
+    8   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ£¬ÕâÀïÓ¦´ğ¿ÉÒÔ²»ÓÃ´¦Àí£¬Ò»°ã»á¸øÒ»¸öÓ¦´ğĞÅºÅ
+    9   1              iic_SendData(0x00);//ÉèÖÃD/CÎª0£¬ÎªÖ¸ÁîÄ£Ê½
+   10   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ
+   11   1              iic_SendData(IIC_Command);//·¢ËÍÖ¸Áî
+   12   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ
+   13   1              iic_Stop();//IICĞ­Òé½áÊøĞÅºÅ
+   14   1      }
+   15          
+   16          /*Õâ¸öÊÇoled·¢ËÍÊı¾İµÄº¯Êı*/
+   17          void oled_IIC_SendData(unsigned char IIC_Data)
+   18          {
+   19   1              iic_Start();//IICĞ­Òé¿ªÊ¼ĞÅºÅ
+   20   1              iic_SendData(0x78);//·¢ËÍÉè±¸µØÖ·
+   21   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ£¬ÕâÀïÓ¦´ğ¿ÉÒÔ²»ÓÃ´¦Àí£¬Ò»°ã»á¸øÒ»¸öÓ¦´ğĞÅºÅ
+   22   1              iic_SendData(0x40);//ÉèÖÃD/CÎª1£¬ÎªÊı¾İÄ£Ê½
+   23   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ
+   24   1              iic_SendData(IIC_Data);//·¢ËÍÊı¾İ
+   25   1              iic_Wait_Ack();//µÈ´ıÓ¦´ğ
+   26   1              iic_Stop();//IICĞ­Òé½áÊøĞÅºÅ
+   27   1      }
+   28          
+   29          /*Õâ¸öÊÇoledÇåÆÁº¯Êı*/
+   30          void oled_clear(void)
+   31          {
+   32   1              unsigned char i,j;//¶¨Òå2¸ö±äÁ¿µÈÏÂÀ´ÊµÏÖÑ­»·
+   33   1              for(i = 0;i < 8;i++)//ÕâÀïÊÇÓÉÓÚSSD1306·ÖÁË8Ò³£º0-7
+   34   1              {
+   35   2                      oled_IIC_SendCommand((unsigned char)(0xb0 + i));//ÕâÀïÊÇ°´Ò³·ÖÅä×Ü¹²8Ò³£º0xb0-0xb7
+   36   2                      oled_IIC_SendCommand(0x00);//ÉèÖÃµÍ4Î»µØÖ·£¬ÕâÀïÖØĞÂÅäÖÃ»á±»ÖÃÎª0000
+   37   2                      oled_IIC_SendCommand(0x10);//ÉèÖÃ¸ß4Î»µØÖ·£¬ÕâÀïÖØĞÂÅäÖÃ»á±»ÖÃÎª0000
+   38   2                      for(j = 0;j < 128;j++)//Ã¿Ò»ĞĞµÄ³¤¶ÈÊÇ128bit
+   39   2                      {
+   40   3                              oled_IIC_SendData(0x00);//ÕâÀïÊ±Ã¿´Î¶¼Ğ´0x00
+   41   3                      }
+   42   2              }
+   43   1      }
+   44          
+   45          /*Õâ¸öÊÇoled³õÊ¼»¯º¯Êı*/
+   46          void oled_Init(void)
+   47          {
+   48   1              iic_Init();//IICĞ­Òé³õÊ¼»¯
+   49   1              delay_ms(200);//ÕâÀïÊÇÉÏµçºóÑÓ³Ù£¬µÈ´ıoled¸´Î»¡£
+   50   1              oled_IIC_SendCommand(0xAE);//.¹Ø±ÕÏÔÊ¾
+   51   1              
+   52   1              oled_IIC_SendCommand(0xD5);//.ÉèÖÃÊ±ÖÓ·ÖÆµÒò×Ó£¬Õğµ´ÆµÂÊ
+   53   1              oled_IIC_SendCommand(0x80);//.µÍ4Î»ÉèÖÃ·ÖÆµÒò×Ó£¬¸ß4Î»ÉèÖÃÕğµ´ÆµÂÊ
+   54   1              
+   55   1              oled_IIC_SendCommand(0xA8);//.ÉèÖÃÇı¶¯Â·Êı
+   56   1              oled_IIC_SendCommand(0x3F);//.Ä¬ÈÏ0x3F£¨1/64£©
+   57   1              
+   58   1              oled_IIC_SendCommand(0xD3);//.ÉèÖÃÏÔÊ¾Æ«ÒÆ
+C251 COMPILER V5.60.0,  oled                                                               06/06/26  20:17:07  PAGE 2   
+
+   59   1              oled_IIC_SendCommand(0x00);//.Ä¬ÈÏÎª0
+   60   1              
+   61   1              oled_IIC_SendCommand(0x00);//.ÉèÖÃÏÔÊ¾Î»ÖÃ-ÁĞµÍµØÖ·
+   62   1              oled_IIC_SendCommand(0x10);//.ÉèÖÃÏÔÊ¾Î»ÖÃ-ÁĞ¸ßµØÖ·
+   63   1              oled_IIC_SendCommand(0x40);//.ÉèÖÃÏÔÊ¾¿ªÊ¼ĞĞ[5:0]£¬ĞĞÊı
+   64   1              
+   65   1              oled_IIC_SendCommand(0x8D);//.µçºÉ±ÃÉèÖÃ
+   66   1              oled_IIC_SendCommand(0x14);//.bit2£º¿ªÆô/¹Ø±Õ
+   67   1              
+   68   1              oled_IIC_SendCommand(0x20);//ÉèÖÃÄÚ´æÑ°Ö·Ä£Ê½
+   69   1              oled_IIC_SendCommand(0x02);//ÉèÖÃ³ÉÎªÒ³ÃæÑ°Ö·Ä£Ê½
+   70   1              
+   71   1              oled_IIC_SendCommand(0xA1);//.¶ÎÖØ¶¨ÒåÉèÖÃ£¬bit0£º0£¬0->1;1:0->127;ÕâÀïÊÇÉèÖÃ³É1£¬ÊÇ½«127Ó³Éäµ½SEG0
+   72   1              
+   73   1              oled_IIC_SendCommand(0xC8);//.ÉèÖÃCOMÉ¨Ãè·½Ïò£¬bit3£º0£ºÆÕÍ¨Ä£Ê½£»1£ºÖØ¶¨ÒåÄ£Ê½£¨COM[N-1]->COM0,N:Çı¶¯Â·
+             -Êı£©;
+   74   1              oled_IIC_SendCommand(0xDA);//.ÉèÖÃCOMÒı½ÅµÄÓ²¼şÅäÖÃ
+   75   1              oled_IIC_SendCommand(0x12);//.A[5:4]£¬ÕâÀïÖ»ÅäÖÃÁËµÚ5Î»£¬Æô¶¯ÁËCOMµÄ×óÓÒÓ³Éä£¬Ë³ĞòCOMÒı½ÅÅäÖÃ
+   76   1              
+   77   1              oled_IIC_SendCommand(0x81);//.ÉèÖÃ¶Ô±È¶È
+   78   1              oled_IIC_SendCommand(0xEF);//.ÕâÀïÉèÖÃ³ÉEF£¬Ä¬ÈÏÊÇ7F£¬Êı¾İÔ½´ó¶Ô±È¶ÈÔ½´ó
+   79   1              
+   80   1              oled_IIC_SendCommand(0xD9);//.ÉèÖÃÔ¤³äµçÖÜÆÚ
+   81   1              oled_IIC_SendCommand(0xF1);//.µÚÒ»½×¶ÎÎª1¸öÊ±ÖÓÖÜÆÚ£¬µÚ¶ş½×¶ÎÎª15¸öÊ±¼äÖÜÆÚ
+   82   1              
+   83   1              oled_IIC_SendCommand(0xDB);//.ÉèÖÃVCOMHµçÑ¹±¶ÂÊ
+   84   1              oled_IIC_SendCommand(0x30);//.[6:4]000£º0.65*vcc£»001£º0.77*vcc£»011£º0.83*vcc£»
+   85   1              
+   86   1              oled_IIC_SendCommand(0xA4);//»Ö¸´µ½RAMÄÚÈİÏÔÊ¾
+   87   1              oled_IIC_SendCommand(0xA6);//.ÉèÖÃÏÔÊ¾·½Ê½£»bit0£º1·´ÏòÏÔÊ¾£»0Õı³£ÏÔÊ¾£»
+   88   1              oled_IIC_SendCommand(0xAF);//.¿ªÆôÏÔÊ¾
+   89   1              oled_clear();
+   90   1      }
+   91          
+   92          /*Õâ¸öÊÇoled¿ªÏÔÊ¾º¯Êı*/
+   93          void oled_Display_ON(void)
+   94          {
+   95   1              oled_IIC_SendCommand(0x8D);//µçºÉ±ÃÉèÖÃÖ¸Áî
+   96   1              oled_IIC_SendCommand(0x14);//´ò¿ªµçºÉ±Ã
+   97   1              oled_IIC_SendCommand(0xAF);//´ò¿ªÏÔÊ¾
+   98   1      }
+   99          
+  100          /*Õâ¸öÊÇoled¹ØÏÔÊ¾º¯Êı*/
+  101          void oled_Display_OFF(void)
+  102          {
+  103   1              oled_IIC_SendCommand(0x8D);//µçºÉ±ÃÉèÖÃÖ¸Áî
+  104   1              oled_IIC_SendCommand(0x10);//¹Ø±ÕµçºÉ±Ã
+  105   1              oled_IIC_SendCommand(0xAE);//¹Ø±ÕÏÔÊ¾
+  106   1      }
+  107          
+  108          
+  109          /*Õâ¸öÊÇoledÈ«ÆÁÌî³äº¯Êı*/
+  110          void oled_Allfill(unsigned char fill_Data)
+  111          {
+  112   1              unsigned char i,j;//¶¨Òå2¸ö±äÁ¿µÈÏÂÀ´ÊµÏÖÑ­»·
+  113   1              for(i = 0;i < 8;i++)//ÕâÀïÊÇÓÉÓÚSSD1306·ÖÁË8Ò³£º0-7
+  114   1              {
+  115   2                      oled_IIC_SendCommand((unsigned char)(0xb0 + i));//ÕâÀïÊÇ°´Ò³·ÖÅä×Ü¹²8Ò³£º0xb0-0xb7
+  116   2                      oled_IIC_SendCommand(0x00);//ÉèÖÃµÍ4Î»µØÖ·£¬ÕâÀïÖØĞÂÅäÖÃ»á±»ÖÃÎª0000
+  117   2                      oled_IIC_SendCommand(0x10);//ÉèÖÃ¸ß4Î»µØÖ·£¬ÕâÀïÖØĞÂÅäÖÃ»á±»ÖÃÎª0000
+  118   2                      for(j = 0;j < 128;j++)//Ã¿Ò»ĞĞµÄ³¤¶ÈÊÇ128bit
+  119   2                      {
+  120   3                              oled_IIC_SendData(fill_Data);//ÕâÀïÊ±Ã¿´Î¶¼Ğ´fill_DataÕâ¸öÖµ
+  121   3                      }
+  122   2              }
+  123   1      }
+C251 COMPILER V5.60.0,  oled                                                               06/06/26  20:17:07  PAGE 3   
+
+  124          
+  125          /*Õâ¸öÊÇoledÉèÖÃ¹â±êº¯Êı*/
+  126          void oled_SetPos(unsigned char x,unsigned char y)
+  127          {
+  128   1              oled_IIC_SendCommand((unsigned char)(0XB0+y));//ÕâÀïÊÇÈ·¶¨ÔÚÄÄ¸öÒ³Ãæ¿ªÊ¼µÄ¹â±ê
+  129   1              oled_IIC_SendCommand((x&0xf0)>>4|0x10);//ÕâÀïÊÇÉèÖÃ¸ß4Î»µÄÁĞ
+  130   1              oled_IIC_SendCommand((x&0x0f));//ÕâÀïÊÇÉèÖÃµÍ4Î»µÄÁĞ
+  131   1      }
+  132          
+  133          
+  134          /*¼ÆËãm^nµÄº¯Êı*/
+  135          unsigned int oled_Pow(unsigned char m,unsigned char n)
+  136          {
+  137   1              unsigned int    result = 1;//ÉèÖÃ±äÁ¿Îªµ±nÎª0Ê±µÄÊı¾İ1
+  138   1              if(n!=0){while(n--)result *= m;}//ÕâÀïÊ±ÅĞ¶ÏnÊÇ·ñÎª0£¬Èç¹ûÊÇÖ±½ÓÊä³ö1¼´¿É£¬Èç¹û²»ÊÇÔÙÔËËã
+  139   1              return result;
+  140   1      }
+  141          
+  142          /*Õâ¸öÊÇoledÏÔÊ¾Êı×Öº¯Êı*/
+  143          void oled_ShowNum(unsigned char x,unsigned char y,int num,unsigned char len,unsigned char size)
+  144          {
+  145   1              unsigned char t,temp;
+  146   1              
+  147   1              if(num<0)//ÕâÀïÊÇÅĞ¶ÏÊäÈëµÄÊıÊÇ¸ºÊı²»ÊÇ
+  148   1              {
+  149   2                      num *= (-1);//ÊÇ¸ºÊı¾Í×ªÎª
+  150   2                      oled_ShowChar((unsigned char)(x-(size/2)),y,'-',16);//ÔÚxÎ»ÖÃµÄÇ°Ò»¸ösizeÎ»ÖÃÉÏÏÔÊ¾¸ººÅ
+  151   2              }
+  152   1              for(t=0;t<len;t++)//¸ù¾İÊı×Ö³¤¶ÈÑ­»·
+  153   1              {
+  154   2                      temp = (num/oled_Pow(10,(unsigned char)(len - t - 1)))%10;//È¡³ö½øÖÆÎ»µÄÊı×Ö
+  155   2                      oled_ShowChar((unsigned char)(x + (size / 2) * t),y,(unsigned char)(temp+'0'),size);//ÏÔÊ¾Ã¿Ò»¸öÎ»µÄÊı×
+             -Ö
+  156   2              }
+  157   1              
+  158   1      }
+  159          
+  160          /*Õâ¸öÊÇoledÏÔÊ¾Ò»¸ö×Ö·ûº¯Êı*/
+  161          void oled_ShowChar(unsigned char x,unsigned char y,unsigned char ch,unsigned char size)
+  162          {
+  163   1              unsigned char c=0,i=0;
+  164   1              c = ch - ' ';//»ñÈ¡×Ö·ûµÄÆ«ÒÆÁ¿
+  165   1              if(x+size/2>127){x = 0; y = y+2;}//ÕâÀïÊÇÅĞ¶ÏxÎ»ÖÃÊÇ·ñÒÑ¾­³¬¹ıÏÔÊ¾¿í¶È£¬Èç¹û³¬¹ı¾Íµ½2Ò³ºó
+  166   1              
+  167   1              if(size == 8)//ÅĞ¶ÏÊÇ8*6µÄ×Ö·û
+  168   1              {
+  169   2                      oled_SetPos(x,y);//ÉèÖÃ¿ªÊ¼Î»ÖÃÎªx£¬y£¨µÚÒ»Ò³£©
+  170   2                      for(i=0;i<6;i++)//Ñ­»·6¸öÁĞÊı¾İ£¬ÒòÎªÖ»ĞèÒªÒ»Ò³£¬ËùÒÔĞ´ÍêÒ»Ò³¼´¿É
+  171   2                              oled_IIC_SendData(F6X8[c][i]);
+  172   2              }
+  173   1              if(size == 16)//ÅĞ¶ÏÊÇ16*8µÄ×Ö·û
+  174   1              {
+  175   2                      oled_SetPos(x,y);//ÉèÖÃ¿ªÊ¼Î»ÖÃÎªx£¬y£¨µÚÒ»Ò³£©
+  176   2                      for(i=0;i<8;i++)//Ñ­»·8¸öÁĞÊı¾İ
+  177   2                              oled_IIC_SendData(F8X16[c*16+i]);//ÕâÀïµÄCÊÇÆ«ÒÆÁ¿£¬È»ºóc*16ÊÇÎªÁËÔÚÊı×éÀïÕÒµ½ÎÒÃÇÒªµÄ×Ö·û£¬iÊÇÊı×éµÚ0
+             --7µÄÊı¾İ
+  178   2                      oled_SetPos(x,(unsigned char)(y+1));    //ÒòÎªÕâÀïµÄ16*8µÄ×Ö·ûĞèÒª2Ò³£¬ÉèÖÃµÚ¶şÒ³Îª¿ªÊ¼Î»ÖÃ
+  179   2                      for(i=0;i<8;i++)//ÕâÀïÊÇµÚ¶şÒ³µÄÁĞÊı¾İÑ­»·
+  180   2                              oled_IIC_SendData(F8X16[c*16+i+8]);//ÕâÀï³öÏÖÁË+8ÊÇÒòÎªÎÒÃÇÊı×éµÄµÚ8-15¸öÊı¾İ
+  181   2              }
+  182   1      }
+  183          
+  184          /*Õâ¸öÊÇoledÏÔÊ¾×Ö·û´®º¯Êı*/
+  185          void oled_ShowStr(unsigned char x,unsigned char y,const unsigned char *p,unsigned char size)
+  186          {
+  187   1              while((*p <= '~') && (*p >= ' '))//ÅĞÕâ¸öÊÇÅĞ¶ÏÊÇ·ñÊÇASCLL±íÀïµÄ×Ö·û£¬Èç¹ûĞ¡ÓÚ»òÕß´óÓÚ¾Í²»´òÓ¡
+C251 COMPILER V5.60.0,  oled                                                               06/06/26  20:17:07  PAGE 4   
+
+  188   1              {
+  189   2                      if(x>(128-(size/2)))//ÕâÀïÊÇÅĞ¶ÏÊÇ·ñ³¬¹ıÃ¿ĞĞµÄ¿í¶È128bit
+  190   2                      {
+  191   3                              x = 0;//Èç¹û³¬¹ı¾Í°ÑxÖÃÎªµÚÒ»Î»
+  192   3                              y += size;//È»ºó°Ñy¼Óµ½ÏÂÒ»ĞĞ
+  193   3                      }
+  194   2                      if(y > (64-size))//ÕâÀïÊÇÅĞ¶ÏÊÇ·ñ³¬¹ıÕû¸öÆÁ¿í¶È64bit
+  195   2                      {
+  196   3                              y = x = 0;//ÕâÀïÊÇÖØĞÂ»Øµ½0ĞĞ0ÁĞµÄÎ»ÖÃ
+  197   3                              oled_clear();//È»ºóÇåÆÁ
+  198   3                      }
+  199   2                      oled_ShowChar(x,y,*p,size);//ÕâÀï¾ÍÊÇÔËÓÃµ½ÉÏÃæÏÔÊ¾Ò»¸ö×Ö·ûµÄº¯Êı£¨ÒòÎªÕâ¸ö×Ö·û¿ÉÒÔ¿´³ÉÓÉ¶à¸ö×Ö·û×é³ÉµÄ
+             -£©
+  200   2                      x += size/2;//ÕâÀïÊÇÃ¿´ÎĞ´Ò»¸ö×Ö·ûºóÒª°Ñx£¨ÁĞ£©ÍùÓÒÆ«ÒÆ×Ö·ûÏà¹ØµÄ¿í¶È
+  201   2                      p++;//×Ö·û´®Ö¸ÕëÔö¼Ó£¬Ò²¾ÍÊÇµ½ÏÂÒ»¸ö×Ö·û
+  202   2              }
+  203   1      }
+  204          
+  205          /*
+  206                  @brief                  ÏÔÊ¾ÖĞÎÄ
+  207                  @param  x£ºÆğÊ¼ÁĞ£»Ò»¸ö×ÖÌåÕ¼16ÁĞ
+  208                                                  y£ºÆğÊ¼Ò³£»Ò»¸ö×ÖÌåÕ¼Á½Ò³
+  209                  @retval                 ÎŞ
+  210           */
+  211          void oled_ShowCN(unsigned char x,unsigned char y,unsigned char bit_temp)
+  212          {
+  213   1              unsigned char i;
+  214   1              oled_SetPos(x,y);//ÉèÖÃ¿ªÊ¼Î»ÖÃx£¬y£¨µÚÒ»Ò³£©
+  215   1              for(i = 0;i < 16;i++)//Ñ­»·16´Î·¢ËÍÊı¾İ£¬ÒòÎªÕâÀïÒ»¸öºº×ÖÊÇÕ¼ÓÃ2Ò³£¬³¤¶È¿í¶È¶¼ÊÇ16
+  216   1              {
+  217   2                      oled_IIC_SendData(Hzk[2*bit_temp][i]);
+  218   2                      /*
+  219   2                      Ğ´ÈëµÚÒ»Ò³Êı£¬ÓÉÓÚÕâÀïÊÇ¶şÎ¬Êı×éÈ»ºóbit_tempÊÇ¶¨Î»ÎÒÃÇ×Ô¶¨ÒåÖĞÎÄ×Ö¿âÀï
+  220   2                      µÄÎ»ÖÃÏàÓ¦µÄºº×Ö£¬2*bit_temp¾ÍÊÇÒ»¸öºº×ÖµÄsize
+  221   2                      */
+  222   2              }
+  223   1              oled_SetPos(x,(unsigned char)(y+1));//ÉèÖÃµÚ¶şÒ³Î»ÖÃ
+  224   1              for(i = 0;i < 16;i++)//È»ºóÔÙĞ´ÈëµÚ¶şÒ³Êı¾İ
+  225   1              {
+  226   2                      oled_IIC_SendData(Hzk[2*bit_temp+1][i]);//ÕâÀï³öÏÖÁË+1Õâ¾ÍÊÇÌøµ½ÏÂÒ»Ò³µÄÊı×éÊı¾İ
+  227   2              }
+  228   1      }
+  229          
+  230          /*Õâ¸öÊÇoledÏÔÊ¾Í¼Æ¬º¯Êı*/
+  231          void oled_ShowBMP(unsigned char x0,unsigned char y0,unsigned char x1,unsigned char y1,unsigned char BMP[]
+             -)
+  232          {
+  233   1              int j=0;
+  234   1              unsigned char x,y;
+  235   1              if(y1%8 == 0)y=y1/8;//ÅĞ¶ÏÊÇ·ñ¸ÕºÃÒ»Ò³
+  236   1              else y=y1/8+1;//²»ÊÇµÄ»°¾ÍÔÙ¼ÓÒ»Ò³
+  237   1              
+  238   1              for(y = y0;y < y1;y++)//Ñ­»·Ò³Êı
+  239   1              {
+  240   2                      oled_SetPos(x0,y);//ÉèÖÃ¿ªÊ¼Î»ÖÃx0£¬y
+  241   2                      for(x = x0;x < x1; x++)//Ñ­»·ÁĞÊı
+  242   2                      {
+  243   3                              oled_IIC_SendData(BMP[j++]);//·¢ËÍÍ¼Æ¬Êı¾İ
+  244   3                      }
+  245   2              }
+  246   1              
+  247   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1118     ------
+C251 COMPILER V5.60.0,  oled                                                               06/06/26  20:17:07  PAGE 5   
+
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         15
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

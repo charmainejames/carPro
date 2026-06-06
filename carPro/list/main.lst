@@ -1,0 +1,314 @@
+C251 COMPILER V5.60.0,  main                                                               06/06/26  11:53:44  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\list\main.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE main.c XSMALL INTR2 BROWSE DEBUG PRINT(.\list\main.lst) OBJECT(.\list\ma
+                    -in.obj) 
+
+stmt  level    source
+
+    1          #include        "config.h"
+    2          #include        "STC32G_PWM.h"
+    3          #include        "STC32G_GPIO.h"
+    4          #include        "STC32G_NVIC.h"
+    5          #include        "STC32G_Timer.h"
+    6          #include        "STC32G_Delay.h"
+    7          /*************  ����˵��    **************
+    8          �߼�PWM��ʱ�� PWM5,PWM6,PWM7,PWM8 ÿ��ͨ�����ɶ���ʵ��PWM���.
+    9          4��ͨ��PWM������Ҫ���ö�Ӧ����ڣ���ͨ��ʾ�����۲�
+             -��������ź�.
+   10          PWM���ں�ռ�ձȿ����Զ������ã���߿ɴ�65535.
+   11          ����ʱ, ѡ��ʱ�� 24MHZ (�û�����"config.h"�޸�Ƶ��).
+   12          ******************************************/
+   13          sbit AIN1=P4^5;
+   14          sbit AIN2=P2^7;
+   15          sbit BIN1=P2^5;
+   16          sbit BIN2=P2^6;
+   17          sbit zuo2=P0^3;
+   18          sbit zuo1=P0^4;
+   19          sbit zhong=P0^2;
+   20          sbit you1=P0^1;
+   21          sbit you2=P0^0;
+   22          sbit LED1=P4^1;
+   23          sbit LED2=P4^2;
+   24          sbit LED3=P4^4;
+   25          
+   26          PWMx_Duty PWMB_Duty;
+   27          u16 PWM_Period = 2000;
+   28          
+   29          /*************  灰度巡线可调参数（上车整定看这里） **************/
+   30          #define BASE_SPEED   68     // 直道基础速度 0~100（弯道吃力就再降，太冲来不及转）
+   31          #define MAX_SPEED    100    // 单轮速度上限
+   32          #define MIN_DRIVE    50     // 最小启动速度：低于此值电机带不动整车
+   33          #define KP           32     // 转向比例系数：越大转向越猛（偏差稍大内轮就反转，�
+             -�地差速急转）
+   34          #define TURN_HARD    1      // 急转弯时是否让内轮反转(原地差速转)，0=只减速，1=可�
+             -�转更猛
+   35          #define DIR_SIGN     (+1)   // 若发现“越修越偏/反向追线”，改成 (-1) 一键纠正左右
+   36          #define LOST_TURN    40     // 全白脱线时找线的转向差速（不要太大，否则转圈）
+   37          
+   38          // 黑线对应的电平：你的模块“压黑线 = 灯暗”。多数情况下压黑线输出低电平
+             -=0。
+   39          // 若烧进去发现行为全反（追白不追黑/乱转），把这里改成 1 即可。
+   40          #define LINE_LEVEL   0      // 压在黑线上时，传感器引脚读到的电平
+   41          
+   42          #define ON_LINE(pin)  ((pin) == LINE_LEVEL)   // 该传感器是否压在黑线上
+   43          
+   44          int last_error = 0;         // 记忆：最后一次有效偏差（用于全白脱线找回）
+   45          
+   46          /*************  ���غ�������        **************/
+   47          
+   48          /*************  �ⲿ�����ͱ������� *****************/
+   49          
+   50          /************************ IO������ ****************************/
+   51          void    GPIO_config(void)
+   52          {
+   53   1              
+   54   1      }
+C251 COMPILER V5.60.0,  main                                                               06/06/26  11:53:44  PAGE 2   
+
+   55          
+   56          /************************ ��ʱ������ ****************************/
+   57          void    Timer_config(void)
+   58          {
+   59   1              TIM_InitTypeDef         TIM_InitStructure;                                      //�ṹ����
+   60   1              TIM_InitStructure.TIM_Mode      = TIM_16BitAutoReload;  //ָ������ģʽ,   TIM_16BitAutoReload
+             -,TIM_16Bit,TIM_8BitAutoReload,TIM_16BitAutoReloadNoMask
+   61   1              TIM_InitStructure.TIM_ClkSource = TIM_CLOCK_1T;         //ָ��ʱ��Դ,     TIM_CLOCK_1T,TIM_CLOCK_12T,TI
+             -M_CLOCK_Ext
+   62   1              TIM_InitStructure.TIM_ClkOut    = DISABLE;                              //�Ƿ������������, ENABLE��D
+             -ISABLE
+   63   1              TIM_InitStructure.TIM_Value     = (u16)(65536UL - (MAIN_Fosc / 1000UL));                //�ж�Ƶ��, 1000��
+             -/��
+   64   1              TIM_InitStructure.TIM_PS        = 0;                                    //8λԤ��Ƶ��(n+1), 0~255
+   65   1              TIM_InitStructure.TIM_Run       = ENABLE;                               //�Ƿ��ʼ����������ʱ��, ENAB
+             -LE��DISABLE
+   66   1              Timer_Inilize(Timer0,&TIM_InitStructure);                               //��ʼ��Timer0    Timer0,Timer1,Timer2,Timer3,Timer4
+   67   1              NVIC_Timer0_Init(ENABLE,Priority_0);            //�ж�ʹ��, ENABLE/DISABLE; ���ȼ�(�͵���)
+             - Priority_0,Priority_1,Priority_2,Priority_3
+   68   1      }
+   69          
+   70          /***************  PWM��ʼ������ *****************/
+   71          void    PWM_config(void)
+   72          {
+   73   1              PWMx_InitDefine         PWMx_InitStructure;
+   74   1      
+   75   1              PWMx_InitStructure.PWM_Mode    =        CCMRn_PWM_MODE1;        //ģʽ,         CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MATCH_IN
+             -VALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+   76   1              PWMx_InitStructure.PWM_Duty    = PWMB_Duty.PWM5_Duty;   //PWMռ�ձ�ʱ��, 0~Period
+   77   1              PWMx_InitStructure.PWM_EnoSelect   = ENO5P;                                     //���ͨ��ѡ��,    ENO1P,ENO1N,ENO2P,ENO2N,ENO
+             -3P,ENO3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+   78   1              PWM_Configuration(PWM5, &PWMx_InitStructure);                           //��ʼ��PWM,  PWMA,PWMB
+   79   1      
+   80   1              PWMx_InitStructure.PWM_Mode    =        CCMRn_PWM_MODE1;        //ģʽ,         CCMRn_FREEZE,CCMRn_MATCH_VALID,CCMRn_MATCH_IN
+             -VALID,CCMRn_ROLLOVER,CCMRn_FORCE_INVALID,CCMRn_FORCE_VALID,CCMRn_PWM_MODE1,CCMRn_PWM_MODE2
+   81   1              PWMx_InitStructure.PWM_Duty    = PWMB_Duty.PWM6_Duty;   //PWMռ�ձ�ʱ��, 0~Period
+   82   1              PWMx_InitStructure.PWM_EnoSelect   = ENO6P;                                     //���ͨ��ѡ��,    ENO1P,ENO1N,ENO2P,ENO2N,ENO
+             -3P,ENO3N,ENO4P,ENO4N / ENO5P,ENO6P,ENO7P,ENO8P
+   83   1              PWM_Configuration(PWM6, &PWMx_InitStructure);                           //��ʼ��PWM,  PWMA,PWMB
+   84   1      
+   85   1              PWMx_InitStructure.PWM_Period   = PWM_Period; //2000                                                    //����ʱ��,   0~65535
+   86   1              PWMx_InitStructure.PWM_DeadTime = 0;                                                            //��������������, 0~255
+   87   1              PWMx_InitStructure.PWM_MainOutEnable= ENABLE;                           //�����ʹ��, ENABLE,DISABLE
+   88   1              PWMx_InitStructure.PWM_CEN_Enable   = ENABLE;                           //ʹ�ܼ�����, ENABLE,DISABLE
+   89   1              PWM_Configuration(PWMB, &PWMx_InitStructure);                           //��ʼ��PWMͨ�üĴ���,  PWMA,PWMB
+   90   1      
+   91   1              PWM6_USE_P21();
+   92   1              PWM5_USE_P20();
+   93   1              NVIC_PWM_Init(PWMB,DISABLE,Priority_0);
+   94   1      }
+   95          
+   96          void PWM_Left(int pwm)     //��0~100��ʾ
+   97          {       
+   98   1              PWMB_Duty.PWM6_Duty = pwm*(PWM_Period/100);  //ע��PWM_Period��ʱΪ100���� 2000 
+   99   1      }
+  100          
+  101          void PWM_Right(int pwm)     //��0~100��ʾ
+  102          {       
+  103   1              PWMB_Duty.PWM5_Duty = pwm*(PWM_Period/100);     
+  104   1      }
+  105          
+  106          void PWM_Run(int pwm1,int pwm2)  //����PWM
+  107          {
+  108   1              PWM_Left(pwm1);
+  109   1              PWM_Right(pwm2);
+  110   1              UpdatePwm(PWMB, &PWMB_Duty);
+C251 COMPILER V5.60.0,  main                                                               06/06/26  11:53:44  PAGE 3   
+
+  111   1      }
+  112          
+  113          // 带方向的差速驱动：left/right 取值 -100~100，正=前进，负=反转。
+  114          // 实测左右接反，已对调：逻辑左轮=电机A(AIN/PWM5)，逻辑右轮=电机B(BIN/PWM6)。
+  115          void Motor_Drive(int left, int right)
+  116          {
+  117   1              // 逻辑左轮 → 电机A 方向
+  118   1              if (left >= 0) { AIN1=0; AIN2=1; }          // 前进
+  119   1              else           { AIN1=1; AIN2=0; left=-left; }  // 反转
+  120   1              // 逻辑右轮 → 电机B 方向
+  121   1              if (right >= 0){ BIN1=1; BIN2=0; }          // 前进
+  122   1              else           { BIN1=0; BIN2=1; right=-right; } // 反转
+  123   1      
+  124   1              // PWM_Run(pwm1=PWM6=电机B, pwm2=PWM5=电机A)，所以这里参数也要交换
+  125   1              PWM_Run(right, left);
+  126   1      }
+  127          
+  128          /*************  灰度巡线辅助函数  **************/
+  129          
+  130          // 限幅：把速度约束到 [0, MAX_SPEED]
+  131          int Clamp(int v)
+  132          {
+  133   1              if (v < 0)          return 0;
+  134   1              if (v > MAX_SPEED)  return MAX_SPEED;
+  135   1              return v;
+  136   1      }
+  137          
+  138          // 启动地板：电机有死区，占空比太低只会嗡嗡不转。
+  139          // 把 (0, MIN_DRIVE) 之间的小速度抬到 MIN_DRIVE；真正要停的 0 保持 0。
+  140          int Floor(int v)
+  141          {
+  142   1              if (v > 0 && v < MIN_DRIVE)  return MIN_DRIVE;
+  143   1              return v;
+  144   1      }
+  145          
+  146          // 计算线偏差。返回值范围约 -4(线在最左) ~ +4(线在最右)，0=居中。
+  147          // 传感器：读到 0 = 压黑线(在线上)，1 = 白底。物理排列 左→右：zuo1 zuo2 zhong yo
+             -u1 you2
+  148          int Track_GetError(void)
+  149          {
+  150   1              int s_l1, s_l2, s_m, s_r1, s_r2;   // 压线=1，白底=0
+  151   1              int cnt, sum;
+  152   1      
+  153   1              s_l1 = ON_LINE(zuo1);    // 最左   P0.4
+  154   1              s_l2 = ON_LINE(zuo2);    // 次左   P0.3
+  155   1              s_m  = ON_LINE(zhong);   // 中     P0.2
+  156   1              s_r1 = ON_LINE(you1);    // 次右   P0.1
+  157   1              s_r2 = ON_LINE(you2);    // 最右   P0.0
+  158   1      
+  159   1              cnt = s_l1 + s_l2 + s_m + s_r1 + s_r2;          // 压线的传感器个数
+  160   1              sum = s_l1*(-4) + s_l2*(-2) + s_m*0 + s_r1*(+2) + s_r2*(+4);  // 位置加权和
+  161   1      
+  162   1              if (cnt == 0)        // 全白脱线 → 不更新记忆，靠上次方向找回（在主循环里处理
+             -）
+  163   1                      return last_error;
+  164   1      
+  165   1              if (cnt >= 5)        // 全黑(十字/路口) → 直行通过
+  166   1              {
+  167   2                      last_error = 0;
+  168   2                      return 0;
+  169   2              }
+  170   1      
+  171   1              last_error = (sum / cnt) * DIR_SIGN;            // 归一化偏差 + 左右纠正
+  172   1              return last_error;
+  173   1      }
+  174          
+C251 COMPILER V5.60.0,  main                                                               06/06/26  11:53:44  PAGE 4   
+
+  175          /******************** ������**************************/
+  176          void main(void)
+  177          {       int i;
+  178   1              WTST = 0;               //���ó���ָ����ʱ��������ֵΪ0�ɽ�CPUִ��ָ��
+             -���ٶ�����Ϊ���
+  179   1              EAXSFR();               //��չSFR(XFR)����ʹ�� 
+  180   1              CKCON = 0;      //��߷���XRAM�ٶ�
+  181   1      
+  182   1              GPIO_config();
+  183   1              Timer_config();
+  184   1              PWM_config();
+  185   1              
+  186   1      
+  187   1        P0M0=0xe0; 
+  188   1              P0M1=0x1f; 
+  189   1              P1M1=0x00;
+  190   1              P1M0=0x00;
+  191   1              P2M1=0x00;
+  192   1              P2M0=0xFF;
+  193   1        P4M0 = 0x16; 
+  194   1              P4M1 = 0x00; 
+  195   1              EA = 1;
+  196   1          
+  197   1              AIN1=0;
+  198   1              AIN2=1;
+  199   1              BIN1=1;
+  200   1              BIN2=0;
+  201   1              LED1=1;
+  202   1              for(i=0; i<5; i++)
+  203   1              {
+  204   2                      LED1 = 1;               delay_ms(130);          LED1 = 0;
+  205   2                      LED2 = 1;               delay_ms(130);          LED2 = 0;
+  206   2                      LED3 = 1;               delay_ms(130);          LED3 = 0;
+  207   2              }
+  208   1      
+  209   1              // 启动冲刺：干电池带载起步难，先全速冲一下冲破静摩擦
+  210   1              PWM_Run(100, 100);
+  211   1              delay_ms(120);
+  212   1      
+  213   1              while (1)
+  214   1              {
+  215   2                      int error, turn, left, right, cnt;
+  216   2      
+  217   2                      // 统计有几个传感器压在黑线上
+  218   2                      cnt = ON_LINE(zuo1) + ON_LINE(zuo2) + ON_LINE(zhong)
+  219   2                          + ON_LINE(you1) + ON_LINE(you2);
+  220   2      
+  221   2                      if (cnt == 0)
+  222   2                      {
+  223   3                              // === 全部脱线 ===
+  224   3                              // 朝最后偏离方向找线。用足够大的速度（带负载也能动），但不打死转圈。
+  225   3                              if (last_error > 0)             // 上次线偏右 → 向右找（左轮前进、右轮反转，原�
+             -�右转找线）
+  226   3                                      Motor_Drive(BASE_SPEED, -LOST_TURN);
+  227   3                              else if (last_error < 0)        // 上次线偏左 → 向左找
+  228   3                                      Motor_Drive(-LOST_TURN, BASE_SPEED);
+  229   3                              else                            // 没有记忆（刚开机就脱线）→ 直行，别乱转
+  230   3                                      Motor_Drive(BASE_SPEED, BASE_SPEED);
+  231   3                              continue;
+  232   3                      }
+  233   2      
+  234   2                      // === 正常巡线：加权偏差 + 差速 ===
+  235   2                      error = Track_GetError();           // -4(线最左) ~ +4(线最右)
+  236   2                      turn  = error * KP;
+  237   2                      left  = BASE_SPEED + turn;          // error>0(偏右) → 左轮快、右轮慢/反转 → 右转追�
+             -�
+C251 COMPILER V5.60.0,  main                                                               06/06/26  11:53:44  PAGE 5   
+
+  238   2                      right = BASE_SPEED - turn;
+  239   2                      // 限上限；允许为负(急转弯内轮反转)，但太小的正值抬到启动地板
+  240   2                      if (left  > MAX_SPEED) left  = MAX_SPEED;
+  241   2                      if (right > MAX_SPEED) right = MAX_SPEED;
+  242   2                      if (!TURN_HARD) { if(left<0) left=0; if(right<0) right=0; }  // 关掉反转时内轮只到0
+  243   2                      left  = Floor(left);                // 正小值抬到 MIN_DRIVE；负值/0 不动
+  244   2                      right = Floor(right);
+  245   2                      Motor_Drive(left, right);
+  246   2      
+  247   2                      // 不加 delay：持续读传感器，避免转向时盲跑冲出
+  248   2              }
+  249   1      }
+  250          
+  251          
+  252          
+  253          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       788     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        20         22
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        12     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
