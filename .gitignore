@@ -1,0 +1,30 @@
+# Keil C51 build outputs
+**/list/
+**/Objects/
+**/Listings/
+**/*.obj
+**/*.crf
+**/*.lst
+**/*.map
+**/*.lnp
+**/*.m51
+**/*.build_log.htm
+
+# User-specific project settings
+*.uvgui.*
+*.uvgui
+*.uvopt
+*.uvoptx
+*.bak
+
+# IDE and assistant settings
+.claude/
+.codex/
+.idea/
+.vscode/
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
